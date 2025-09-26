@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
+
+# Editors
+.vscode/
+.idea/
