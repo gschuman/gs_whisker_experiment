@@ -1,0 +1,34 @@
+01_sync_test.py — TTL sync pulse on GP13, once per second
+02_lick_irq.py — Lick input on GP14 with IRQ, timestamps and basic debounce
+02b_lick_adc.py — Lick analog on GP26/ADC0, threshold + hysteresis (if staying analog)
+03_valve_timer.py — Valve MOSFET gate on GP15, precise one-shot pulse
+04_stepper_pio_single.py — One stepper on GP16/GP17 using PIO (N steps at F Hz)
+05_stepper_two_motors.py — Two steppers (GP16/17 and GP18/19, optional ENA=GP20)
+06_event_logger.py — 12-byte event records and USB stream (lick/valve/step/sync)
+07_cmd_decoder.py — Binary command frames over USB (SOLENOID_PULSE, STEPPER_MOVE, SYNC_PULSE, ARM_WINDOW)
+08_response_window.py — MCU-side response window logic with immediate reward
+pico_firmware.py — Combined firmware (all of the above)
+
+
+
+
+
+
+
+Steppers: Use PIO for pulses; optionally use DMA to stream ramp tables for smooth acceleration at high rates.
+Sync patterns: PIO (optionally DMA) for continuous or complex pulse trains; overkill for occasional event pulses.
+Lick/valve: Don’t need DMA—use GPIO IRQ + timer one‑shots.
+
+IO: No extra hardware or installs. It’s built into MicroPython on the Pico (module rp2).
+What you do: write a small rp2.asm_pio program, create a StateMachine with your STEP pin as base, set freq, send parameters with sm.put(), sm.active(1).
+That’s enough for precise, jitter‑free step pulses per the plan.
+DMA: Not needed for your current goals.
+MicroPython doesn’t expose a simple DMA API. If you later need ultra‑high‑rate streaming (e.g., long acceleration tables at very high step rates), you’d either:
+Keep MicroPython and add a tiny C helper for DMA, or
+Move that specific part to the C SDK.
+For now, PIO alone covers steppers and sync pulses robustly.
+Your checklist now
+Ensure MicroPython firmware is flashed (rp2 on Pico/Pico W).
+Pins wired per plan (STEP/DIR on GP16/17 and GP18/19; valve on GP15; sync on GP13).
+Start with PIO-only stepper scripts; no DMA setup required.
+
